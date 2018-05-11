@@ -19,7 +19,7 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Skills
 
         protected override double StrainValueOf(OsuDifficultyHitObject current)
         {
-            double distance = current.Distance;
+            /* double distance = current.Distance;
 
             double speedValue;
             if (distance > single_spacing_threshold)
@@ -32,8 +32,8 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Skills
                 speedValue = 0.95 + 0.25 * (distance - almost_diameter / 2) / (almost_diameter / 2);
             else
                 speedValue = 0.95;
-
-            return speedValue / current.DeltaTime;
+                */
+            return 1 / current.DeltaTime;
         }
     }
 }

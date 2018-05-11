@@ -92,13 +92,25 @@ namespace osu.Game.Rulesets.Osu.Scoring
 
         private double computeAimValue()
         {
-            double aimValue = Math.Pow(5.0f * Math.Max(1.0f, Attributes["Aim"] / 0.0675f) - 4.0f, 3.0f) / 100000.0f;
+            double jumpValue = Math.Pow(5.0f * Math.Max(1.0f, Attributes["Jump"] / 0.0675f) - 4.0f, 3.0f) / 100000.0f;
+            double flowValue = Math.Pow(5.0f * Math.Max(1.0f, Attributes["Flow"] / 0.0675f) - 4.0f, 3.0f) / 100000.0f;
 
             // Longer maps are worth more
             double lengthBonus = 0.95f + 0.4f * Math.Min(1.0f, totalHits / 2000.0f) +
                 (totalHits > 2000 ? Math.Log10(totalHits / 2000.0f) * 0.5f : 0.0f);
 
+            if (mods.Any(h => h is OsuModHidden))
+                flowValue *= 1.18f;
+
+            double aimValue = jumpValue + flowValue;
+
             aimValue *= lengthBonus;
+
+            if (mods.Any(h => h is OsuModFlashlight))
+            {
+                // Apply length bonus again if flashlight is on simply because it becomes a lot harder on longer maps.
+                aimValue *= 1.45f * lengthBonus;
+            }
 
             // Penalize misses exponentially. This mainly fixes tag4 maps and the likes until a per-hitobject solution is available
             aimValue *= Math.Pow(0.97f, countMiss);
@@ -120,15 +132,6 @@ namespace osu.Game.Rulesets.Osu.Scoring
             }
 
             aimValue *= approachRateFactor;
-
-            if (mods.Any(h => h is OsuModHidden))
-                aimValue *= 1.18f;
-
-            if (mods.Any(h => h is OsuModFlashlight))
-            {
-                // Apply length bonus again if flashlight is on simply because it becomes a lot harder on longer maps.
-                aimValue *= 1.45f * lengthBonus;
-            }
 
             // Scale the aim value with accuracy _slightly_
             aimValue *= 0.5f + accuracy / 2.0f;

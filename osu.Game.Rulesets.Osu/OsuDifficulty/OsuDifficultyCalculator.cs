@@ -37,8 +37,9 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty
             OsuDifficultyBeatmap beatmap = new OsuDifficultyBeatmap(Beatmap.HitObjects, TimeRate);
             Skill[] skills =
             {
-                new Aim(),
-                new Speed()
+                new Jump(),
+                new Speed(),
+                new Flow(),
             };
 
             double sectionEnd = section_length / TimeRate;
@@ -59,15 +60,21 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty
                     s.Process(h);
             }
 
-            double aimRating = Math.Sqrt(skills[0].DifficultyValue()) * difficulty_multiplier;
+            double jumpRating  = Math.Sqrt(skills[0].DifficultyValue()) * difficulty_multiplier;
             double speedRating = Math.Sqrt(skills[1].DifficultyValue()) * difficulty_multiplier;
+            double flowRating  = Math.Sqrt(skills[2].DifficultyValue()) * difficulty_multiplier;
 
-            double starRating = aimRating + speedRating + Math.Abs(aimRating - speedRating) / 2;
+            double[] list = { jumpRating, speedRating, flowRating };
+            double max = System.Linq.Enumerable.Max<double>(list);
+            double min = System.Linq.Enumerable.Min<double>(list);
+
+            double starRating = (jumpRating + speedRating + flowRating) * 2 / 3 + Math.Abs(max - min) / 2;
 
             if (categoryDifficulty != null)
             {
-                categoryDifficulty.Add("Aim", aimRating);
+                categoryDifficulty.Add("Jump",  jumpRating);
                 categoryDifficulty.Add("Speed", speedRating);
+                categoryDifficulty.Add("Flow",  flowRating);
             }
 
             return starRating;
