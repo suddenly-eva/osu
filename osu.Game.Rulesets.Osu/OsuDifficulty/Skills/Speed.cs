@@ -10,7 +10,7 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Skills
     /// </summary>
     public class Speed : Skill
     {
-        protected override double SkillMultiplier => 1400;
+        protected override double SkillMultiplier => 1500;
         protected override double StrainDecayBase => 0.3;
 
         private const double single_spacing_threshold = 125;

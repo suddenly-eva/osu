@@ -58,32 +58,18 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Preprocessing
 
             t = triangle;
             BaseObject = t[0];
-            setJumpDistance();
-            setFlowDistance();
+            setDistances();
             setTimingValues();
             // Calculate angle here
         }
 
-        private void setJumpDistance()
+        private void setDistances()
         {
             // We will scale distances by this factor, so we can assume a uniform CircleSize among beatmaps.
             double scalingFactor = normalized_radius / BaseObject.Radius;
-            if (BaseObject.Radius < 30)
+            if (BaseObject.Radius < 40)
             {
-                double smallCircleBonus = Math.Min(30 - BaseObject.Radius, 5) / 50;
-                scalingFactor *= 1 + smallCircleBonus;
-            }
-            
-            JumpDistance = (BaseObject.StackedPosition - t[1].StackedPosition).Length * scalingFactor;
-        }
-
-        private void setFlowDistance()
-        {
-            // We will scale distances by this factor, so we can assume a uniform CircleSize among beatmaps.
-            double scalingFactor = normalized_radius / BaseObject.Radius;
-            if (BaseObject.Radius < 30)
-            {
-                double smallCircleBonus = Math.Min(30 - BaseObject.Radius, 5) / 50;
+                double smallCircleBonus = (40 - BaseObject.Radius) / 50;
                 scalingFactor *= 1 + smallCircleBonus;
             }
 
@@ -98,6 +84,7 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Preprocessing
             }
 
             FlowDistance = (lastTravelDistance + (BaseObject.StackedPosition - t[2].StackedPosition).Length) * scalingFactor;
+            JumpDistance = Math.Max(0.000001, (BaseObject.StackedPosition - t[1].StackedPosition).Length * scalingFactor -  FlowDistance / 1.5);
         }
 
         private void setTimingValues()
