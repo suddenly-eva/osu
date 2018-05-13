@@ -84,7 +84,7 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Preprocessing
             }
 
             FlowDistance = (lastTravelDistance + (BaseObject.StackedPosition - t[2].StackedPosition).Length) * scalingFactor;
-            JumpDistance = Math.Max(0.000001, (BaseObject.StackedPosition - t[1].StackedPosition).Length * scalingFactor -  FlowDistance / 1.5);
+            JumpDistance = Math.Max(0.000001, (BaseObject.StackedPosition - t[1].StackedPosition).Length * scalingFactor -  FlowDistance / 2);
         }
 
         private void setTimingValues()

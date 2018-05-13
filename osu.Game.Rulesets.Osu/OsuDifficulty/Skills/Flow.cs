@@ -11,7 +11,7 @@ namespace osu.Game.Rulesets.Osu.OsuDifficulty.Skills
     /// </summary>
     public class Flow : Skill
     {
-        protected override double SkillMultiplier => 30;
+        protected override double SkillMultiplier => 28;
         protected override double StrainDecayBase => 0.15;
 
         protected override double StrainValueOf(OsuDifficultyHitObject current) => Math.Pow(current.FlowDistance, 0.99) / current.DeltaTime2;

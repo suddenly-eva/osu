@@ -96,30 +96,23 @@ namespace osu.Game.Rulesets.Osu.Scoring
             double flowValue  = Math.Pow(5.0f * Math.Max(1.0f, Attributes["Flow"] / 0.0675f) - 4.0f, 3.0f) / 100000.0f;
             double speedValue = Math.Pow(5.0f * Math.Max(1.0f, Attributes["Speed"] / 0.0675f) - 4.0f, 3.0f) / 100000.0f;
             
-            if (mods.Any(h => h is OsuModHidden))
-                flowValue *= 1.18f;
-
-            if (flowValue > jumpValue && flowValue > speedValue)
-            {
-                double jumpDifference = (flowValue - jumpValue) / 2;
-                double speedDifference = (flowValue - speedValue) / 2;
-                flowValue += jumpDifference + speedDifference;
-            }
-
-            if (jumpValue > flowValue && jumpValue > speedValue)
-            {
-                double flowDifference = (jumpValue - flowValue) / 2;
-                double speedDifference = (jumpValue - speedValue) / 2;
-                jumpValue += flowDifference + speedDifference;
-            }
-
-            double aimValue = (jumpValue + flowValue) / 1.2;
-
             // Longer maps are worth more
             double lengthBonus = 0.95f + 0.4f * Math.Min(1.0f, totalHits / 2000.0f) +
                 (totalHits > 2000 ? Math.Log10(totalHits / 2000.0f) * 0.5f : 0.0f);
 
-            aimValue *= lengthBonus;
+            if (flowValue > jumpValue && flowValue > speedValue)
+                flowValue *= lengthBonus;
+
+            if (jumpValue > flowValue && jumpValue > speedValue)
+                jumpValue *= lengthBonus;
+
+            double flowEscape = (flowValue - speedValue) / 1.4;
+            double jumpEscape = (jumpValue - speedValue) / 3;
+
+            if (mods.Any(h => h is OsuModHidden))
+                flowValue *= 1.18f;
+
+            double aimValue = jumpValue + flowValue + Math.Max(jumpEscape, flowEscape);
 
             if (mods.Any(h => h is OsuModFlashlight))
             {
@@ -167,12 +160,11 @@ namespace osu.Game.Rulesets.Osu.Scoring
                 double flowDifference = (speedValue - flowValue) / 2;
                 double jumpDifference = (speedValue - jumpValue) / 2;
                 speedValue += flowDifference + jumpDifference;
+                // Longer maps are worth more
+                speedValue *= 0.95f + 0.4f * Math.Min(1.0f, totalHits / 2000.0f) +
+                    (totalHits > 2000 ? Math.Log10(totalHits / 2000.0f) * 0.5f : 0.0f);
             }
-
-            // Longer maps are worth more
-            //speedValue *= 0.95f + 0.4f * Math.Min(1.0f, totalHits / 2000.0f) +
-            //    (totalHits > 2000 ? Math.Log10(totalHits / 2000.0f) * 0.5f : 0.0f);
-
+            
             // Penalize misses exponentially. This mainly fixes tag4 maps and the likes until a per-hitobject solution is available
             speedValue *= Math.Pow(0.97f, countMiss);
 
